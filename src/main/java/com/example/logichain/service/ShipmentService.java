@@ -5,6 +5,7 @@ import com.example.logichain.ShipmentNotFoundException;
 import com.example.logichain.dto.ShipmentDTO;
 import com.example.logichain.mapper.ShipmentMapper;
 import com.example.logichain.model.Shipment;
+import com.example.logichain.model.ShipmentStatus;
 import com.example.logichain.repository.ShipmentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,7 @@ public class ShipmentService {
         log.info("Creating shipment with source: {} and destination: {}", dto.getSource(), dto.getDestination());
 
         Shipment sp = ShipmentMapper.toEntity(dto);
-        sp.setStatus("CREATED");
+        sp.setStatus(ShipmentStatus.CREATED);
 
         Shipment saved = repo.save(sp);
 

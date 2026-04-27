@@ -20,7 +20,8 @@ public class Shipment {
     @Size(min = 5, message = "Destination must be at least 5 characters")
     private String destination;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ShipmentStatus status;
 
     public Shipment() {}
 
@@ -33,6 +34,6 @@ public class Shipment {
     public String getDestination() { return destination; }
     public void setDestination(String destination) { this.destination = destination; }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public ShipmentStatus getStatus() { return status; }
+    public void setStatus(ShipmentStatus status) { this.status = status; }
 }
