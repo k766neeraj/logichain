@@ -55,5 +55,9 @@ public class ShipmentController {
         return ResponseEntity.ok(service.searchBySource(source));
     }
 
+    @PutMapping("/{id}/status")
+    public ResponseEntity<ShipmentDTO> updateStatus(@PathVariable int id,@RequestParam String status){
+        return ResponseEntity.ok(service.updateStatus(id,status));
+    }
 
 }

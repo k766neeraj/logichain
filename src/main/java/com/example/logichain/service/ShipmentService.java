@@ -127,4 +127,33 @@ public class ShipmentService {
         return dtoList;
     }
 
+    public ShipmentDTO updateStatus(int id, String status){
+
+        log.info("Updating shipment status for id: {} to {}",id,status);
+        Shipment sp = repo.findById(id).orElseThrow(()->{
+            log.error("Shipment not found with id: {}",id);
+            return new ShipmentNotFoundException();
+        });
+        ShipmentStatus newStatus;
+        try{
+            newStatus = ShipmentStatus.valueOf(status.toUpperCase());
+        }catch (Exception e){
+            throw new IllegalArgumentException("Invalid status value");
+        }
+
+        if(sp.getStatus() == ShipmentStatus.DELIVERED){
+            throw new IllegalStateException("Cannot update delivered Shipment");
+        }
+
+        if(sp.getStatus()==ShipmentStatus.CREATED && newStatus == ShipmentStatus.DELIVERED){
+            throw new IllegalStateException("Inavlis status transition");
+        }
+
+        sp.setStatus(newStatus);
+        Shipment update = repo.save(sp);
+        log.info("Shipment status updated successfully for id: {}",id);
+
+        return ShipmentMapper.toDTO(update);
+    }
+
 }
