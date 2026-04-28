@@ -89,6 +89,9 @@ public class ShipmentService {
         });
         sp.setSource(spo.getSource());
         sp.setDestination(spo.getDestination());
+        if(sp.getStatus() == ShipmentStatus.DELIVERED){
+            throw new IllegalStateException("Cannot update delivered shipment");
+        }
         Shipment update = repo.save(sp);
         log.info("Shipment Updated Successfully with id: {}",id);
         ShipmentDTO response = ShipmentMapper.toDTO(update);
@@ -106,6 +109,7 @@ public class ShipmentService {
             return new ShipmentNotFoundException();
         });
         repo.delete(sp);
+        log.info("Shipment deleted successfully for id:{}",id);
     }
 
 
@@ -140,13 +144,16 @@ public class ShipmentService {
         }catch (Exception e){
             throw new IllegalArgumentException("Invalid status value");
         }
+        if(sp.getStatus() == newStatus){
+            throw new IllegalStateException("Shipment already in this status");
+        }
 
         if(sp.getStatus() == ShipmentStatus.DELIVERED){
             throw new IllegalStateException("Cannot update delivered Shipment");
         }
 
         if(sp.getStatus()==ShipmentStatus.CREATED && newStatus == ShipmentStatus.DELIVERED){
-            throw new IllegalStateException("Inavlis status transition");
+            throw new IllegalStateException("Invalid status transition");
         }
 
         sp.setStatus(newStatus);

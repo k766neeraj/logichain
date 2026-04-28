@@ -33,6 +33,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<String> handleIllegalState(Exception e){
-        return ResponseEntity.badRequest().body(e.getMessage())
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
