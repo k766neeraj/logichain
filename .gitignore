@@ -1,1 +1,17 @@
+# Ignore local config
 application-local.properties
+
+# Build files
+target/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+*.iml
+.vscode/
