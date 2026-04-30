@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,9 +28,9 @@ public class ShipmentService {
 
     private static final Logger log = LoggerFactory.getLogger(ShipmentService.class);
 
-    public List<ShipmentDTO> getAllShipments(int page, int size, String sortBy, String source){
+    public List<ShipmentDTO> getAllShipments(int page, int size, String sortBy, String source, String status){
 
-        log.info("Fetching shipment - page: {}, size: {}, sortBy: {}, source: {}", page, size, sortBy, source);
+        log.info("Fetching shipment - page: {}, size: {}, sortBy: {}, source: {}, status: {}", page, size, sortBy, source,status);
 
         page = Math.max(page,0);
         size = Math.max(size,1);
@@ -38,10 +39,24 @@ public class ShipmentService {
 
         Page<Shipment> shipmentPage;
 
-        if(source == null || source.trim().isEmpty()){
+        ShipmentStatus shipmentStatus = null;
+        if(status!=null && !status.trim().isEmpty()){
+            try {
+                shipmentStatus = ShipmentStatus.valueOf(status.toUpperCase());
+            }catch(Exception e){
+                throw new IllegalArgumentException("Invalid status value");
+            }
+        }
+
+        if(source!=null  && !source.isEmpty() && shipmentStatus!=null){
+            shipmentPage = repo.findBySourceContainingIgnoreCaseAndStatus(source,shipmentStatus,pageable);
+        }else if(source != null && !source.trim().isEmpty()){
+            shipmentPage = repo.findBySourceContainingIgnoreCase(source,pageable);
+        }else if(shipmentStatus!=null){
+            shipmentPage = repo.findByStatus(shipmentStatus,pageable);
+        }
+         else {
             shipmentPage = repo.findAll(pageable);
-        } else {
-            shipmentPage = repo.findBySourceContainingIgnoreCase(source, pageable);
         }
 
         List<ShipmentDTO> list = new ArrayList<>();
@@ -59,6 +74,7 @@ public class ShipmentService {
 
         Shipment sp = ShipmentMapper.toEntity(dto);
         sp.setStatus(ShipmentStatus.CREATED);
+        sp.setCreatedAt(LocalDateTime.now());
 
         Shipment saved = repo.save(sp);
 
@@ -89,9 +105,8 @@ public class ShipmentService {
         });
         sp.setSource(spo.getSource());
         sp.setDestination(spo.getDestination());
-        if(sp.getStatus() == ShipmentStatus.DELIVERED){
-            throw new IllegalStateException("Cannot update delivered shipment");
-        }
+        sp.setUpdatedAt(LocalDateTime.now());
+
         Shipment update = repo.save(sp);
         log.info("Shipment Updated Successfully with id: {}",id);
         ShipmentDTO response = ShipmentMapper.toDTO(update);
@@ -157,6 +172,8 @@ public class ShipmentService {
         }
 
         sp.setStatus(newStatus);
+        sp.setUpdatedAt(LocalDateTime.now());
+
         Shipment update = repo.save(sp);
         log.info("Shipment status updated successfully for id: {}",id);
 

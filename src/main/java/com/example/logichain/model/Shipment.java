@@ -4,6 +4,7 @@ package com.example.logichain.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 @Entity
 public class Shipment {
@@ -23,6 +24,11 @@ public class Shipment {
     @Enumerated(EnumType.STRING)
     private ShipmentStatus status;
 
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+
     public Shipment() {}
 
     public int getId() { return id; }
@@ -36,4 +42,12 @@ public class Shipment {
 
     public ShipmentStatus getStatus() { return status; }
     public void setStatus(ShipmentStatus status) { this.status = status; }
+
+    public LocalDateTime getCreatedAt() { return createdAt;}
+
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt;}
+
+    public LocalDateTime getUpdatedAt() { return updatedAt;}
+
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt;}
 }

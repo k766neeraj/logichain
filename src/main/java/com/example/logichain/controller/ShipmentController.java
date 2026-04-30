@@ -3,6 +3,7 @@ package com.example.logichain.controller;
 
 import com.example.logichain.dto.ShipmentDTO;
 import com.example.logichain.model.Shipment;
+import com.example.logichain.model.ShipmentStatus;
 import com.example.logichain.service.ShipmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,10 @@ public class ShipmentController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "") String source){
+            @RequestParam(required = false) String source,
+            @RequestParam(required = false) String status){
 
-        return ResponseEntity.ok(service.getAllShipments(page,size,sortBy,source));
+        return ResponseEntity.ok(service.getAllShipments(page,size,sortBy,source,status));
     }
 
     @PostMapping
