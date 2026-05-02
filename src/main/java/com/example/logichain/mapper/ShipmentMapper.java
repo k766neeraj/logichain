@@ -1,7 +1,11 @@
 package com.example.logichain.mapper;
 
 import com.example.logichain.dto.ShipmentDTO;
+import com.example.logichain.dto.ShipmentTrackingDTO;
 import com.example.logichain.model.Shipment;
+import com.example.logichain.model.ShipmentTracking;
+
+import java.time.LocalDateTime;
 
 
 public class ShipmentMapper {
@@ -18,5 +22,12 @@ public class ShipmentMapper {
         sp.setSource(dto.getSource());
         sp.setDestination(dto.getDestination());
         return sp;
+    }
+
+    public static ShipmentTrackingDTO toDTO(ShipmentTracking tracking){
+        ShipmentTrackingDTO dto = new ShipmentTrackingDTO();
+        dto.setStatus(tracking.getStatus());
+        dto.setTimestamp(tracking.getTimestamp());
+        return dto;
     }
 }

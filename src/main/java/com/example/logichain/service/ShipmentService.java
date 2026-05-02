@@ -3,10 +3,13 @@ package com.example.logichain.service;
 
 import com.example.logichain.ShipmentNotFoundException;
 import com.example.logichain.dto.ShipmentDTO;
+import com.example.logichain.dto.ShipmentTrackingDTO;
 import com.example.logichain.mapper.ShipmentMapper;
 import com.example.logichain.model.Shipment;
 import com.example.logichain.model.ShipmentStatus;
+import com.example.logichain.model.ShipmentTracking;
 import com.example.logichain.repository.ShipmentRepository;
+import com.example.logichain.repository.ShipmentTrackingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,9 @@ public class ShipmentService {
 
     @Autowired
     private ShipmentRepository repo;
+
+    @Autowired
+    private ShipmentTrackingRepository trackingRepo;
 
     private static final Logger log = LoggerFactory.getLogger(ShipmentService.class);
 
@@ -77,6 +83,12 @@ public class ShipmentService {
         sp.setCreatedAt(LocalDateTime.now());
 
         Shipment saved = repo.save(sp);
+
+        ShipmentTracking tracking = new ShipmentTracking();
+        tracking.setShipmentId(saved.getId());
+        tracking.setStatus(saved.getStatus());
+        tracking.setTimestamp(LocalDateTime.now());
+        trackingRepo.save(tracking);
 
         log.info("Shipment created successfully with id: {}", saved.getId());
 
@@ -175,9 +187,27 @@ public class ShipmentService {
         sp.setUpdatedAt(LocalDateTime.now());
 
         Shipment update = repo.save(sp);
+
+        ShipmentTracking tracking = new ShipmentTracking();
+        tracking.setShipmentId(update.getId());
+        tracking.setStatus(update.getStatus());
+        tracking.setTimestamp(LocalDateTime.now());
+
+        trackingRepo.save(tracking);
+
         log.info("Shipment status updated successfully for id: {}",id);
 
         return ShipmentMapper.toDTO(update);
     }
 
+    public List<ShipmentTrackingDTO> getTracking(int id) {
+        List<ShipmentTracking> list =  trackingRepo.findByShipmentIdOrderByTimestampAsc(id);
+
+        List<ShipmentTrackingDTO> dtoList = new ArrayList<>();
+        for(ShipmentTracking tracking:list){
+            ShipmentTrackingDTO dto = ShipmentMapper.toDTO(tracking);
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
 }

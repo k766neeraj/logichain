@@ -2,8 +2,10 @@
 package com.example.logichain.controller;
 
 import com.example.logichain.dto.ShipmentDTO;
+import com.example.logichain.dto.ShipmentTrackingDTO;
 import com.example.logichain.model.Shipment;
 import com.example.logichain.model.ShipmentStatus;
+import com.example.logichain.model.ShipmentTracking;
 import com.example.logichain.service.ShipmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +62,11 @@ public class ShipmentController {
     @PutMapping("/{id}/status")
     public ResponseEntity<ShipmentDTO> updateStatus(@PathVariable int id,@RequestParam String status){
         return ResponseEntity.ok(service.updateStatus(id,status));
+    }
+
+    @GetMapping("/{id}/tracking")
+    public ResponseEntity<List<ShipmentTrackingDTO>> getTracking(@PathVariable int id){
+        return ResponseEntity.ok(service.getTracking(id));
     }
 
 }
