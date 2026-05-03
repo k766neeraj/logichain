@@ -1,6 +1,7 @@
 
 package com.example.logichain.controller;
 
+import com.example.logichain.dto.ApiResponse;
 import com.example.logichain.dto.ShipmentDTO;
 import com.example.logichain.dto.ShipmentTrackingDTO;
 import com.example.logichain.model.Shipment;
@@ -22,7 +23,7 @@ public class ShipmentController {
     private ShipmentService service;
 
     @GetMapping
-    public ResponseEntity<List<ShipmentDTO>> getAllShipments(
+    public ResponseEntity<ApiResponse<List<ShipmentDTO>>> getAllShipments(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -33,17 +34,17 @@ public class ShipmentController {
     }
 
     @PostMapping
-    public ResponseEntity<ShipmentDTO> createShipment(@Valid @RequestBody ShipmentDTO dto){
+    public ResponseEntity<ApiResponse<ShipmentDTO>> createShipment(@Valid @RequestBody ShipmentDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(service.saveShipment(dto));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ShipmentDTO> getShipmentById(@PathVariable int id){
+    public ResponseEntity<ApiResponse<ShipmentDTO>> getShipmentById(@PathVariable int id){
         return ResponseEntity.ok(service.getShipmentById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ShipmentDTO> updateShipmentById(@PathVariable int id,@Valid @RequestBody ShipmentDTO dto){
+    public ResponseEntity<ApiResponse<ShipmentDTO>> updateShipmentById(@PathVariable int id,@Valid @RequestBody ShipmentDTO dto){
         return ResponseEntity.ok(service.updateShipmentById(id,dto));
     }
 
@@ -60,12 +61,12 @@ public class ShipmentController {
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<ShipmentDTO> updateStatus(@PathVariable int id,@RequestParam String status){
+    public ResponseEntity<ApiResponse<ShipmentDTO>> updateStatus(@PathVariable int id,@RequestParam String status){
         return ResponseEntity.ok(service.updateStatus(id,status));
     }
 
     @GetMapping("/{id}/tracking")
-    public ResponseEntity<List<ShipmentTrackingDTO>> getTracking(@PathVariable int id){
+    public ResponseEntity<ApiResponse<List<ShipmentTrackingDTO>>> getTracking(@PathVariable int id){
         return ResponseEntity.ok(service.getTracking(id));
     }
 

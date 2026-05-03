@@ -2,6 +2,7 @@
 package com.example.logichain.service;
 
 import com.example.logichain.ShipmentNotFoundException;
+import com.example.logichain.dto.ApiResponse;
 import com.example.logichain.dto.ShipmentDTO;
 import com.example.logichain.dto.ShipmentTrackingDTO;
 import com.example.logichain.mapper.ShipmentMapper;
@@ -34,7 +35,7 @@ public class ShipmentService {
 
     private static final Logger log = LoggerFactory.getLogger(ShipmentService.class);
 
-    public List<ShipmentDTO> getAllShipments(int page, int size, String sortBy, String source, String status){
+    public ApiResponse<List<ShipmentDTO>> getAllShipments(int page, int size, String sortBy, String source, String status){
 
         log.info("Fetching shipment - page: {}, size: {}, sortBy: {}, source: {}, status: {}", page, size, sortBy, source,status);
 
@@ -71,10 +72,16 @@ public class ShipmentService {
             list.add(ShipmentMapper.toDTO(sp));
         }
 
-        return list;
+        return new ApiResponse<>(
+                list,
+                shipmentPage.getNumber(),
+                shipmentPage.getSize(),
+                Math.toIntExact(shipmentPage.getTotalElements()),
+                "Shipment fetched successfully"
+        );
     }
 
-    public ShipmentDTO saveShipment(ShipmentDTO dto){
+    public ApiResponse<ShipmentDTO> saveShipment(ShipmentDTO dto){
 
         log.info("Creating shipment with source: {} and destination: {}", dto.getSource(), dto.getDestination());
 
@@ -92,10 +99,13 @@ public class ShipmentService {
 
         log.info("Shipment created successfully with id: {}", saved.getId());
 
-        return ShipmentMapper.toDTO(saved);
+        return new ApiResponse<>(
+                ShipmentMapper.toDTO(saved),
+                "Shipment created successfully"
+        );
     }
 
-    public ShipmentDTO getShipmentById(int id){
+    public ApiResponse<ShipmentDTO> getShipmentById(int id){
 
         log.info("Fetching shipment with id: {}", id);
 
@@ -104,10 +114,13 @@ public class ShipmentService {
             return new ShipmentNotFoundException();
         });
 
-        return ShipmentMapper.toDTO(sp);
+        return new ApiResponse<>(
+                ShipmentMapper.toDTO(sp),
+                "Shipment fetched successfully by id"
+        );
     }
 
-    public ShipmentDTO updateShipmentById(int id,ShipmentDTO spo) {
+    public ApiResponse<ShipmentDTO> updateShipmentById(int id,ShipmentDTO spo) {
 
         log.info("Updating Shipment with id: {}",id);
 
@@ -122,7 +135,10 @@ public class ShipmentService {
         Shipment update = repo.save(sp);
         log.info("Shipment Updated Successfully with id: {}",id);
         ShipmentDTO response = ShipmentMapper.toDTO(update);
-        return response;
+        return new ApiResponse<>(
+                response,
+                "Shipment updated successfully by id"
+        );
     }
 
 
@@ -158,7 +174,7 @@ public class ShipmentService {
         return dtoList;
     }
 
-    public ShipmentDTO updateStatus(int id, String status){
+    public ApiResponse<ShipmentDTO> updateStatus(int id, String status){
 
         log.info("Updating shipment status for id: {} to {}",id,status);
         Shipment sp = repo.findById(id).orElseThrow(()->{
@@ -197,10 +213,13 @@ public class ShipmentService {
 
         log.info("Shipment status updated successfully for id: {}",id);
 
-        return ShipmentMapper.toDTO(update);
+        return new ApiResponse<>(
+                ShipmentMapper.toDTO(update),
+                "Status updated successfully"
+        );
     }
 
-    public List<ShipmentTrackingDTO> getTracking(int id) {
+    public ApiResponse<List<ShipmentTrackingDTO>> getTracking(int id) {
         List<ShipmentTracking> list =  trackingRepo.findByShipmentIdOrderByTimestampAsc(id);
 
         List<ShipmentTrackingDTO> dtoList = new ArrayList<>();
@@ -208,6 +227,9 @@ public class ShipmentService {
             ShipmentTrackingDTO dto = ShipmentMapper.toDTO(tracking);
             dtoList.add(dto);
         }
-        return dtoList;
+        return new ApiResponse<>(
+                dtoList,
+                "Tracking fetched successfully"
+        );
     }
 }
