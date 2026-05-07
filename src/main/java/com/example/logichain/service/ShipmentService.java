@@ -14,6 +14,8 @@ import com.example.logichain.repository.ShipmentTrackingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +36,7 @@ public class ShipmentService {
     private ShipmentTrackingRepository trackingRepo;
 
     private static final Logger log = LoggerFactory.getLogger(ShipmentService.class);
+
 
     public ApiResponse<List<ShipmentDTO>> getAllShipments(int page, int size, String sortBy, String source, String status){
 
@@ -105,6 +108,7 @@ public class ShipmentService {
         );
     }
 
+    @Cacheable(value = "shipments", key = "#id")
     public ApiResponse<ShipmentDTO> getShipmentById(int id){
 
         log.info("Fetching shipment with id: {}", id);
@@ -120,6 +124,7 @@ public class ShipmentService {
         );
     }
 
+    @CacheEvict(value = "shipments", key = "#id")
     public ApiResponse<ShipmentDTO> updateShipmentById(int id,ShipmentDTO spo) {
 
         log.info("Updating Shipment with id: {}",id);
@@ -143,6 +148,7 @@ public class ShipmentService {
 
 
 
+    @CacheEvict(value = "shipments", key = "#id")
     public void deleteShipmentById(int id) {
 
         log.info("Deleting Shipment for id: {}",id);

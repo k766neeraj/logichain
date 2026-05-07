@@ -3,7 +3,11 @@ package com.example.logichain.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class ShipmentDTO{
+import java.io.Serializable;
+
+public class ShipmentDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @NotBlank(message = "Source cannot be empty")
     @Size(min = 3, message = "Source must be at least 3 characters")

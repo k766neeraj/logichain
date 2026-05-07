@@ -1,6 +1,11 @@
 package com.example.logichain.dto;
 
-public class ApiResponse<T>{
+import java.io.Serializable;
+
+public class ApiResponse<T> implements Serializable {
+
+
+
     private T data;
     private int page;
     private int size;
