@@ -4,6 +4,7 @@ package com.example.logichain.service;
 import com.example.logichain.ShipmentNotFoundException;
 import com.example.logichain.dto.ApiResponse;
 import com.example.logichain.dto.ShipmentDTO;
+import com.example.logichain.dto.ShipmentEvent;
 import com.example.logichain.dto.ShipmentTrackingDTO;
 import com.example.logichain.mapper.ShipmentMapper;
 import com.example.logichain.model.Shipment;
@@ -34,6 +35,9 @@ public class ShipmentService {
 
     @Autowired
     private ShipmentTrackingRepository trackingRepo;
+
+    @Autowired
+    private KafkaProducerService producer;
 
     private static final Logger log = LoggerFactory.getLogger(ShipmentService.class);
 
@@ -93,6 +97,12 @@ public class ShipmentService {
         sp.setCreatedAt(LocalDateTime.now());
 
         Shipment saved = repo.save(sp);
+
+        ShipmentEvent event = new ShipmentEvent();
+        event.setShipmentId(saved.getId());
+        event.setStatus(saved.getStatus().name());
+        producer.sendShipmentEvent(event);
+
 
         ShipmentTracking tracking = new ShipmentTracking();
         tracking.setShipmentId(saved.getId());
