@@ -100,6 +100,8 @@ public class ShipmentService {
 
         ShipmentEvent event = new ShipmentEvent();
         event.setShipmentId(saved.getId());
+        event.setSource(saved.getSource());
+        event.setDestination(saved.getDestination());
         event.setStatus(saved.getStatus().name());
         producer.sendShipmentEvent(event);
 
