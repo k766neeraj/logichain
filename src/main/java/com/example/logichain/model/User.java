@@ -1,16 +1,26 @@
 package com.example.logichain.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
-@Entity
+@Entity()
 @Table(name = "users")
 public class User {
 
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String username;
-    private String userpassword;
+    private String password;
     private String role;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
@@ -20,12 +30,12 @@ public class User {
         this.username = username;
     }
 
-    public String getUserpassword() {
-        return userpassword;
+    public String getpassword() {
+        return password;
     }
 
-    public void setUserpassword(String userpassword) {
-        this.userpassword = userpassword;
+    public void setpassword(String userpassword) {
+        this.password = userpassword;
     }
 
     public String getRole() {
