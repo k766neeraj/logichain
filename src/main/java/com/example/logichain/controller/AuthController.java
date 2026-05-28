@@ -3,6 +3,7 @@ package com.example.logichain.controller;
 import com.example.logichain.dto.LoginRequest;
 import com.example.logichain.dto.RegisterRequest;
 import com.example.logichain.service.AuthService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

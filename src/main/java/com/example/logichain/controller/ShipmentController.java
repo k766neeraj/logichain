@@ -8,6 +8,7 @@ import com.example.logichain.model.Shipment;
 import com.example.logichain.model.ShipmentStatus;
 import com.example.logichain.model.ShipmentTracking;
 import com.example.logichain.service.ShipmentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/shipments")
+@SecurityRequirement(name = "bearerAuth")
 public class ShipmentController {
 
     @Autowired

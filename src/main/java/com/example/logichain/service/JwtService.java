@@ -17,7 +17,6 @@ public class JwtService {
 
     public String generateToken(String username){
         Key key = Keys.hmacShaKeyFor(secretkey.getBytes());
-        System.out.println("secret_key"+secretkey);
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
@@ -26,5 +25,15 @@ public class JwtService {
                         key,
                         SignatureAlgorithm.HS256
                 ).compact();
+    }
+
+    public String extractUsername(String token){
+        Key key = Keys.hmacShaKeyFor(secretkey.getBytes());
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 }
