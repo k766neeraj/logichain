@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class ShipmentController {
     @Autowired
     private ShipmentService service;
 
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping
     public ResponseEntity<ApiResponse<List<ShipmentDTO>>> getAllShipments(
             @RequestParam(defaultValue = "0") int page,
@@ -35,6 +37,7 @@ public class ShipmentController {
         return ResponseEntity.ok(service.getAllShipments(page,size,sortBy,source,status));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<ShipmentDTO>> createShipment(@Valid @RequestBody ShipmentDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(service.saveShipment(dto));
@@ -50,6 +53,7 @@ public class ShipmentController {
         return ResponseEntity.ok(service.updateShipmentById(id,dto));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteShipmentById(@PathVariable int id){
         service.deleteShipmentById(id);
