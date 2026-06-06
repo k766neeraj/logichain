@@ -1,18 +1,21 @@
 package com.example.logichain.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.io.Serializable;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> implements Serializable {
 
 
 
     private T data;
-    private int page;
-    private int size;
-    private long totalElements;
+    private Integer page;
+    private Integer size;
+    private Integer totalElements;
     private String message;
 
-    public ApiResponse(T data, int page, int size, int totalElements, String message){
+    public ApiResponse(T data, Integer page, Integer size, Integer totalElements, String message){
         this.data = data;
         this.page = page;
         this.size = size;
@@ -33,27 +36,27 @@ public class ApiResponse<T> implements Serializable {
         this.data = data;
     }
 
-    public int getPage() {
+    public Integer getPage() {
         return page;
     }
 
-    public void setPage(int page) {
+    public void setPage(Integer page) {
         this.page = page;
     }
 
-    public int getSize() {
+    public Integer getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(Integer size) {
         this.size = size;
     }
 
-    public long getTotalElements() {
+    public Integer getTotalElements() {
         return totalElements;
     }
 
-    public void setTotalElements(long totalElements) {
+    public void setTotalElements(Integer totalElements) {
         this.totalElements = totalElements;
     }
 

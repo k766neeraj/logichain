@@ -74,6 +74,7 @@ public class ShipmentController {
     @GetMapping("/{id}/tracking")
     public ResponseEntity<ApiResponse<List<ShipmentTrackingDTO>>> getTracking(@PathVariable int id){
         return ResponseEntity.ok(service.getTracking(id));
+
     }
 
 }
