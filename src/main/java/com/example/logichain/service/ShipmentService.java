@@ -7,6 +7,7 @@ import com.example.logichain.dto.ShipmentDTO;
 import com.example.logichain.dto.ShipmentEvent;
 import com.example.logichain.dto.ShipmentTrackingDTO;
 import com.example.logichain.mapper.ShipmentMapper;
+import com.example.logichain.model.AuditAction;
 import com.example.logichain.model.Shipment;
 import com.example.logichain.model.ShipmentStatus;
 import com.example.logichain.model.ShipmentTracking;
@@ -38,6 +39,9 @@ public class ShipmentService {
 
     @Autowired
     private KafkaProducerService producer;
+
+    @Autowired
+    private AuditLogService auditLogService;
 
     private static final Logger log = LoggerFactory.getLogger(ShipmentService.class);
 
@@ -98,6 +102,12 @@ public class ShipmentService {
 
         Shipment saved = repo.save(sp);
 
+        auditLogService.logAction(
+                AuditAction.CREATE_SHIPMENT,
+                "SHIPMENT",
+                saved.getId()
+        );
+
         ShipmentEvent event = new ShipmentEvent();
         event.setShipmentId(saved.getId());
         event.setSource(saved.getSource());
@@ -111,6 +121,12 @@ public class ShipmentService {
         tracking.setStatus(saved.getStatus());
         tracking.setTimestamp(LocalDateTime.now());
         trackingRepo.save(tracking);
+
+        auditLogService.logAction(
+                AuditAction.CREATE_TRACKING,
+                "SHIPMENT TRACKING",
+                saved.getId()
+        );
 
         log.info("Shipment created successfully with id: {}", saved.getId());
 
@@ -150,6 +166,13 @@ public class ShipmentService {
         sp.setUpdatedAt(LocalDateTime.now());
 
         Shipment update = repo.save(sp);
+
+        auditLogService.logAction(
+                AuditAction.UPDATE_SHIPMENT,
+                "SHIPMENT",
+                update.getId()
+        );
+
         log.info("Shipment Updated Successfully with id: {}",id);
         ShipmentDTO response = ShipmentMapper.toDTO(update);
         return new ApiResponse<>(
@@ -170,6 +193,11 @@ public class ShipmentService {
             return new ShipmentNotFoundException();
         });
         repo.delete(sp);
+        auditLogService.logAction(
+                AuditAction.DELETE_SHIPMENT,
+                "SHIPMENT",
+                id
+        );
         log.info("Shipment deleted successfully for id:{}",id);
     }
 
@@ -222,12 +250,24 @@ public class ShipmentService {
 
         Shipment update = repo.save(sp);
 
+        auditLogService.logAction(
+                AuditAction.UPDATE_SHIPMENT_STATUS,
+                "SHIPMENT",
+                id
+        );
+
         ShipmentTracking tracking = new ShipmentTracking();
         tracking.setShipmentId(update.getId());
         tracking.setStatus(update.getStatus());
         tracking.setTimestamp(LocalDateTime.now());
 
         trackingRepo.save(tracking);
+
+        auditLogService.logAction(
+                AuditAction.UPDATE_TRACKING,
+                "SHIPMENT TRACKING",
+                update.getId()
+        );
 
         log.info("Shipment status updated successfully for id: {}",id);
 

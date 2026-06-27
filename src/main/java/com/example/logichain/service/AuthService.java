@@ -2,6 +2,7 @@ package com.example.logichain.service;
 
 import com.example.logichain.dto.LoginRequest;
 import com.example.logichain.dto.RegisterRequest;
+import com.example.logichain.model.AuditAction;
 import com.example.logichain.model.User;
 import com.example.logichain.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,11 +14,14 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuditLogService auditLogService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService){
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService,
+                       AuditLogService auditLogService){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.auditLogService = auditLogService;
     }
 
     public String register(RegisterRequest request){
@@ -27,6 +31,12 @@ public class AuthService {
 
         user.setRole("USER");
         userRepository.save(user);
+
+        auditLogService.logAction(
+                AuditAction.CREATE_USER,
+                "USER",
+                user.getId()
+        );
 
         return "User registered successfully";
     }
@@ -43,6 +53,12 @@ public class AuthService {
         if(!matches){
             throw new RuntimeException("Invalid Password");
         }
+
+        auditLogService.logAction(
+                AuditAction.LOGIN,
+                "USER",
+                user.getId()
+        );
 
         return jwtService.generateToken(user.getUsername(), user.getRole());
     }
