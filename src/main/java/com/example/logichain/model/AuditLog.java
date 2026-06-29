@@ -15,9 +15,13 @@ public class AuditLog {
 
     @Enumerated(EnumType.STRING)
     private AuditAction action;
-    private String entityType;
+
+    @Enumerated(EnumType.STRING)
+    private EntityType entityType;
+
     private int entityId;
     private LocalDateTime timestamp;
+    private String description;
 
     public int getId() {
         return id;
@@ -43,11 +47,11 @@ public class AuditLog {
         this.action = action;
     }
 
-    public String getEntityType() {
+    public EntityType getEntityType() {
         return entityType;
     }
 
-    public void setEntityType(String entityType) {
+    public void setEntityType(EntityType entityType) {
         this.entityType = entityType;
     }
 
@@ -65,6 +69,14 @@ public class AuditLog {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

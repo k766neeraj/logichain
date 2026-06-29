@@ -3,6 +3,7 @@ package com.example.logichain.service;
 import com.example.logichain.dto.LoginRequest;
 import com.example.logichain.dto.RegisterRequest;
 import com.example.logichain.model.AuditAction;
+import com.example.logichain.model.EntityType;
 import com.example.logichain.model.User;
 import com.example.logichain.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,12 +31,12 @@ public class AuthService {
         user.setpassword(passwordEncoder.encode(request.getPassword()));
 
         user.setRole("USER");
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
         auditLogService.logAction(
                 AuditAction.CREATE_USER,
-                "USER",
-                user.getId()
+                EntityType.USER,
+                savedUser.getId()
         );
 
         return "User registered successfully";
@@ -56,7 +57,7 @@ public class AuthService {
 
         auditLogService.logAction(
                 AuditAction.LOGIN,
-                "USER",
+                EntityType.USER,
                 user.getId()
         );
 

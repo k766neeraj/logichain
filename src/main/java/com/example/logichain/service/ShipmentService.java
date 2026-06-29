@@ -7,10 +7,7 @@ import com.example.logichain.dto.ShipmentDTO;
 import com.example.logichain.dto.ShipmentEvent;
 import com.example.logichain.dto.ShipmentTrackingDTO;
 import com.example.logichain.mapper.ShipmentMapper;
-import com.example.logichain.model.AuditAction;
-import com.example.logichain.model.Shipment;
-import com.example.logichain.model.ShipmentStatus;
-import com.example.logichain.model.ShipmentTracking;
+import com.example.logichain.model.*;
 import com.example.logichain.repository.ShipmentRepository;
 import com.example.logichain.repository.ShipmentTrackingRepository;
 import org.slf4j.Logger;
@@ -104,8 +101,13 @@ public class ShipmentService {
 
         auditLogService.logAction(
                 AuditAction.CREATE_SHIPMENT,
-                "SHIPMENT",
-                saved.getId()
+                EntityType.SHIPMENT,
+                saved.getId(),
+                "Shipment created with source: " +
+                        saved.getSource() +
+                        " and destination: " +
+                        saved.getDestination()
+
         );
 
         ShipmentEvent event = new ShipmentEvent();
@@ -121,12 +123,6 @@ public class ShipmentService {
         tracking.setStatus(saved.getStatus());
         tracking.setTimestamp(LocalDateTime.now());
         trackingRepo.save(tracking);
-
-        auditLogService.logAction(
-                AuditAction.CREATE_TRACKING,
-                "SHIPMENT TRACKING",
-                saved.getId()
-        );
 
         log.info("Shipment created successfully with id: {}", saved.getId());
 
@@ -169,8 +165,9 @@ public class ShipmentService {
 
         auditLogService.logAction(
                 AuditAction.UPDATE_SHIPMENT,
-                "SHIPMENT",
-                update.getId()
+                EntityType.SHIPMENT,
+                update.getId(),
+                "Shipment is updated by "+id
         );
 
         log.info("Shipment Updated Successfully with id: {}",id);
@@ -195,8 +192,9 @@ public class ShipmentService {
         repo.delete(sp);
         auditLogService.logAction(
                 AuditAction.DELETE_SHIPMENT,
-                "SHIPMENT",
-                id
+                EntityType.SHIPMENT,
+                id,
+                "Deleted Shipment for "+id
         );
         log.info("Shipment deleted successfully for id:{}",id);
     }
@@ -245,6 +243,8 @@ public class ShipmentService {
             throw new IllegalStateException("Invalid status transition");
         }
 
+        ShipmentStatus oldStatus = sp.getStatus();
+
         sp.setStatus(newStatus);
         sp.setUpdatedAt(LocalDateTime.now());
 
@@ -252,8 +252,11 @@ public class ShipmentService {
 
         auditLogService.logAction(
                 AuditAction.UPDATE_SHIPMENT_STATUS,
-                "SHIPMENT",
-                id
+                EntityType.SHIPMENT,
+                id,
+                "Status Change from "+
+                        oldStatus+" to "+newStatus
+
         );
 
         ShipmentTracking tracking = new ShipmentTracking();
@@ -262,12 +265,6 @@ public class ShipmentService {
         tracking.setTimestamp(LocalDateTime.now());
 
         trackingRepo.save(tracking);
-
-        auditLogService.logAction(
-                AuditAction.UPDATE_TRACKING,
-                "SHIPMENT TRACKING",
-                update.getId()
-        );
 
         log.info("Shipment status updated successfully for id: {}",id);
 
