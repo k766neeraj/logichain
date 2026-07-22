@@ -36,7 +36,8 @@ public class AuthService {
         auditLogService.logAction(
                 AuditAction.CREATE_USER,
                 EntityType.USER,
-                savedUser.getId()
+                savedUser.getId(),
+                "User is successfully Registered"
         );
 
         return "User registered successfully";
@@ -56,9 +57,11 @@ public class AuthService {
         }
 
         auditLogService.logAction(
+                request.getUsername(),
                 AuditAction.LOGIN,
                 EntityType.USER,
-                user.getId()
+                user.getId(),
+                "Login successfully completed"
         );
 
         return jwtService.generateToken(user.getUsername(), user.getRole());

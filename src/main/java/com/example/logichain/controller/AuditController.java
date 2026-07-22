@@ -3,6 +3,7 @@ package com.example.logichain.controller;
 import com.example.logichain.dto.ApiResponse;
 import com.example.logichain.dto.AuditLogDTO;
 import com.example.logichain.service.AuditLogService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,10 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/admin/audit-logs")
+@SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasRole('ADMIN')")
 public class AuditController {
 
@@ -27,9 +30,14 @@ public class AuditController {
     public ApiResponse<List<AuditLogDTO>> getAllLogs(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam String sortBy
-    ){
-        return auditLogService.getAllLogs();
+            @RequestParam String sortBy,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String action,
+            @RequestParam(required = false) String EntityType,
+            @RequestParam(required = false) LocalDate fromDate,
+            @RequestParam(required = false) LocalDate toDate
+            ){
+        return auditLogService.getAllLogs(page,size,sortBy,username,action,EntityType,fromDate,toDate);
     }
 
 }
